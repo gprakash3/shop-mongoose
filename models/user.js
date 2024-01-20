@@ -1,6 +1,5 @@
 const mongoose=require('mongoose');
-const { INTEGER } = require('sequelize');
-const Product = require('./product');
+const Order = require('./order');
 
 const Schema = mongoose.Schema;
 
@@ -61,47 +60,14 @@ userSchema.methods.addTocart = function(product){
 
   }
 
+  userSchema.methods.clearCart = function(){
+    this.cart= {items:[]};
+    return this.save()
+  }
+
+
+
 module.exports = mongoose.model('User', userSchema);
 
 
 
-
-
-
-
-
-
-
-
-   
-//   addOrders(){
-//     let db=getDb();
-//     return this.getCart()
-//     .then(products => {
-//       const order = {
-//         items: products,
-//         user: {
-//           _id: new mongodb.ObjectId(this._id),
-//           name: this.name
-//         }
-//       };
-//       return db.collection('order').insertOne(order);
-//     })
-//     .then(result => {
-//       this.cart={items:[]};
-//       return db
-//       .collection('users')
-//       .updateOne(
-//         { _id: new mongodb.ObjectId(this._id) },
-//         { $set: { cart: { items: [] } } }
-//       );    })
-//     .catch(err => console.log(err));
-//   }
-
-//   getOrders(){
-//     let db=getDb();
-//     return db.collection('order').find({'user._id' : new mongodb.ObjectId(this._id)}).toArray()
-//   }
-// }
-
-// module.exports = User;

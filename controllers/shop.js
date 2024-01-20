@@ -1,5 +1,5 @@
 const Product = require('../models/product');
-
+const Order = require('../models/order');
 exports.getProducts = (req, res, next) => {
   Product.find()
     .then(products => {
@@ -83,24 +83,44 @@ exports.postCartDeleteProduct = (req, res, next) => {
 };
 
 exports.postOrder = (req, res, next) => {
-  let fetchedCart;
-  req.user.addOrders()
-  .then(result => {
-    console.log('product added');
-  })
-  .catch(err => console.log(err));
+
+  req.user
+    .populate('cart.items.productId')
+    .then(user => {
+      const products = user.cart.items.map(item => {
+        //...item.prodId._doc: {} will create new js Object 
+        //productId will be object with all metadata attach to it
+        //._doc will take all data in item.productId
+        return { quantity: item.quantity, product: { ...item.productId._doc } };
+      });
+      const order = new Order({
+        user: {
+          name: req.user.name,
+          userId: req.user
+        },
+        products: products
+      });
+      return order.save();
+    })
+    .then(result => {
+      req.user.clearCart();
+      console.log('product added to order');
+    })
+    .then(() => {
+      res.redirect('/orders');
+    })
+    .catch(err => console.log(err));
 };
 
 exports.getOrders = (req, res, next) => {
-  req.user
-    .getOrders()
-    .then(orders => {
-      console.log("orders are", orders)
-      res.render('shop/orders', {
-        path: '/orders',
-        pageTitle: 'Your Orders',
-        orders: orders
-      });
-    })
+  Order.find({'user.userId':req.user._id})
+  .then(order => {
+    console.log(order);
+    res.render('shop/orders', {
+      path: '/orders',
+      pageTitle: 'Your Orders',
+      orders: order
+    });
+  })
     .catch(err => console.log(err));
 };
