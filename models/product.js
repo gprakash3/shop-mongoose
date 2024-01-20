@@ -18,6 +18,11 @@ const prodcutSchema = new Schema({
   imageUrl:{
     type:String,
     require:true
+  },
+  userId: {
+    type:Schema.Types.ObjectId,
+    ref:'User',
+    required:true
   }
 });
 
