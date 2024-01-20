@@ -49,6 +49,18 @@ userSchema.methods.addTocart = function(product){
             return this.save();
         }
 
+ //delete cart items
+  userSchema.methods.deleteById = function(prodId){
+    const updatedcart = this.cart.items.filter(item => {
+        // console.log(item.productId.toString(), " ", prodId.toString());
+      return item.productId.toString()!=prodId.toString();
+    });
+    this.cart.items = updatedcart;
+    
+    return this.save();
+
+  }
+
 module.exports = mongoose.model('User', userSchema);
 
 
@@ -58,69 +70,8 @@ module.exports = mongoose.model('User', userSchema);
 
 
 
-// const getDb= require('../util/database').getDb;
-// const mongodb= require('mongodb');
-
-// class User{
-//   constructor(name, email,cart,id){
-//     this.name = name;
-//     this.email = email;
-//     this.cart = cart;
-//     this._id = id;
-//   }
-
-//   insertUser(){
-//     let db=getDb();
-//     return db.collection('users').insertOne(this)
-//     .then(result => console.log(result))
-//     .catch(err => console.log(err));
-//   }
 
 
-
-//   //get all product available in cart
-//   getCart(){
-//     const db=getDb();
-//     //since this.cart.item will contain product id and quantity and we only want product id as array to pass it in find(), we use map here.
-//     const productIds = this.cart.items.map(i => {
-//       return i.productId;
-//     });
-//     //it will return product contain in array productIds (which is products embedded in user collection)
-//     return db.collection('products').find({_id:{$in: productIds}}).toArray()
-//     .then(products => {
-//       //to get quantity of returned products in user collection
-//       return products.map(prod => {
-//         //returning all property of product along with quantity
-//         //we use arrow function so that this will have access to cart items.
-//         //again, cartitem will contain product and quantity,  we only add quantity.
-//         return {...prod, quantity: this.cart.items.find(cartitem => {
-//             //here cartitem.productId and prod._id is of type mongodb ObjectId hence we convert it to string for comparision
-//           return cartitem.productId.toString() == prod._id.toString();
-//         }).quantity}
-//       })
-//     })
-//   }
-
-
-//   //delete cart items
-//   deleteById(prodId){
-//     const updatedcart = this.cart.items.filter(item => {
-//       return item.productId.toString()!=prodId.toString();
-//     });
-//     const db= getDb();
-//     return db.collection('users').updateOne({_id: new mongodb.ObjectId(this._id)}, {$set:{cart: {items:updatedcart}}});
-
-//   }
-
-//   static findById(userId){
-//     let db=getDb();
-//     return db.collection('users').find({_id: new mongodb.ObjectId(userId)}).next()
-//     .then(user => {
-//       // console.log(user);
-//       return user;
-//     })
-//     .catch(err => console.log(err));
-//   }
 
    
 //   addOrders(){
