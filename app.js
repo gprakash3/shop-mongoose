@@ -37,7 +37,7 @@ app.use(contactRoutes);
 app.use(errorController.get404);
 
 
-mongoose.connect('mongodb+srv://prakash:prakash9031@cluster0.c9lcyai.mongodb.net/shop?retryWrites=true&w=majority')
+mongoose.connect(process.env.MONGODB_CONNECT)
     .then(result =>{
         User.findOne()
         .then(user => {
